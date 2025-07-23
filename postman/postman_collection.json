@@ -1,0 +1,238 @@
+{
+	"info": {
+		"_postman_id": "ad01d6a2-ac26-4ae8-a2b6-1daa940f1bcb",
+		"name": "DummyData API 测试",
+		"description": "测试所有股票和基金相关接口",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "47012356",
+		"_collection_link": "https://yinzi99-56bd3d5c-8757652.postman.co/workspace/yinzi99-56bd3d5c's-Workspace~74fa2db0-47dc-4d4e-8194-3bad9b5810b5/collection/47012356-ad01d6a2-ac26-4ae8-a2b6-1daa940f1bcb?action=share&source=collection_link&creator=47012356"
+	},
+	"item": [
+		{
+			"name": "获取所有股票列表",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/stocks?page=1&limit=10&order=desc",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"stocks"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "limit",
+							"value": "10"
+						},
+						{
+							"key": "order",
+							"value": "desc"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "获取单只股票详情",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/stocks/000001",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"stocks",
+						"000001"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "获取股票简要信息",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/stocks/601939/brief",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"stocks",
+						"601939",
+						"brief"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "获取股票历史价格",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/stocks/601939/history?start=2025-01-01&end=2025-07-31",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"stocks",
+						"601939",
+						"history"
+					],
+					"query": [
+						{
+							"key": "start",
+							"value": "2025-01-01"
+						},
+						{
+							"key": "end",
+							"value": "2025-07-31"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "获取所有基金列表",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/funds?page=1&limit=10&type=股票型&sort=fund_size&order=desc",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"funds"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "limit",
+							"value": "10"
+						},
+						{
+							"key": "type",
+							"value": "股票型"
+						},
+						{
+							"key": "sort",
+							"value": "fund_size"
+						},
+						{
+							"key": "order",
+							"value": "desc"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "获取单只基金详情",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/funds/011709",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"funds",
+						"011709"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "获取基金简要信息",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/funds/011709/brief",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"funds",
+						"011709",
+						"brief"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "获取基金历史净值",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/funds/011730/history?start=2025-01-01&end=2025-07-31",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"funds",
+						"011730",
+						"history"
+					],
+					"query": [
+						{
+							"key": "start",
+							"value": "2025-01-01"
+						},
+						{
+							"key": "end",
+							"value": "2025-07-31"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

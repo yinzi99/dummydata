@@ -1,0 +1,177 @@
+{
+  "info": {
+    "name": "DummyData API 测试",
+    "_postman_id": "dummydata-api-test",
+    "description": "测试所有股票和基金相关接口",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "获取所有股票列表",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/stocks?page=1&limit=10&sort=market_cap&order=desc",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "stocks"],
+          "query": [
+            { "key": "page", "value": "1" },
+            { "key": "limit", "value": "10" },
+            { "key": "sort", "value": "market_cap" },
+            { "key": "order", "value": "desc" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "获取单只股票详情",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/stocks/000001",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "stocks", "000001"]
+        }
+      }
+    },
+    {
+      "name": "获取股票简要信息",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/stocks/000001/brief",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "stocks", "000001", "brief"]
+        }
+      }
+    },
+    {
+      "name": "获取股票历史价格",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/stocks/000001/history?start=2025-01-01&end=2025-07-31",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "stocks", "000001", "history"],
+          "query": [
+            { "key": "start", "value": "2025-01-01" },
+            { "key": "end", "value": "2025-07-31" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "股票推荐（日均涨幅前十）",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/stocks/recommend?days=7",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "stocks", "recommend"],
+          "query": [
+            { "key": "days", "value": "7" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "获取所有基金列表",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/funds?page=1&limit=10&type=混合型&sort=fund_size&order=desc",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "funds"],
+          "query": [
+            { "key": "page", "value": "1" },
+            { "key": "limit", "value": "10" },
+            { "key": "type", "value": "混合型" },
+            { "key": "sort", "value": "fund_size" },
+            { "key": "order", "value": "desc" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "获取单只基金详情",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/funds/011730",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "funds", "011730"]
+        }
+      }
+    },
+    {
+      "name": "获取基金简要信息",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/funds/011730/brief",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "funds", "011730", "brief"]
+        }
+      }
+    },
+    {
+      "name": "获取基金历史净值",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/funds/011730/history?start=2025-01-01&end=2025-07-31",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "funds", "011730", "history"],
+          "query": [
+            { "key": "start", "value": "2025-01-01" },
+            { "key": "end", "value": "2025-07-31" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "基金推荐（日均净值涨幅前十）",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/funds/recommend?days=7",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "funds", "recommend"],
+          "query": [
+            { "key": "days", "value": "7" }
+          ]
+        }
+      }
+    }
+  ]
+}
