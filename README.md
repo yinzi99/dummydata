@@ -4,6 +4,8 @@
 
 The env use node version is `v23.11.0`, and remove some useless file ,if there is any problem to reuse this repo, plz recompile, also you can contact me directly.
 
+TO view the dummy.db, you need to install the `sqlite-viewer` plugin .
+
 1. **Install dependencies:**
    ```bash
    npm install express better-sqlite3 xlsx
