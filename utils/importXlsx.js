@@ -17,7 +17,7 @@ async function importXLSX(filePath, tableName, fieldMap) {
     const values = Object.values(mapped);
 
     await db.runAsync(
-      `INSERT INTO ${tableName} (${columns}) VALUES (${placeholders})`,
+      `INSERT OR IGNORE INTO ${tableName} (${columns}) VALUES (${placeholders})`,
       values
     );
   }
