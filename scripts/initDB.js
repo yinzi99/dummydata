@@ -24,6 +24,7 @@ const SCHEMAS = [
     high REAL,
     low REAL,
     volume TEXT,
+    change_percent REAL,
     FOREIGN KEY(stock_code) REFERENCES stocks(code)
   )`,
     `CREATE INDEX IF NOT EXISTS idx_stock_code_date_desc ON stock_history (stock_code, date DESC)`,
