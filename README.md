@@ -8,15 +8,15 @@ TO view the dummy.db, you need to install the `sqlite-viewer` plugin .
 
 1. **Install dependencies:**
    ```bash
-   npm install express better-sqlite3 xlsx
+   npm run prepare
    ```
 2. **Initialize the database:（only once）**
    ```bash
-   node scripts/initDB.js
+   npm run preparedb
    ```
 3. **Start the API service:**
    ```bash
-   node app.js
+   npm run start
    ```
 
 ## Data Source
@@ -252,231 +252,45 @@ After starting the service, it listens on `http://localhost:3000`. You can acces
   ]
   ```
 
-- **Get brief stock info**  
-   `GET /api/stocks/{code}/brief`  
+- **Get stock info**  
+   `GET /api/stocks/{code}`  
    Response:
 
   ```json
-  {
-    "code": "601939",
-    "name": "建设银行",
-    "latest_price": 9.45,
-    "change_percent": -1.87
-  }
+  {"data": {
+        "stock_code": "000560",
+        "name": "我爱我家",
+        "latest_price": 2.58,
+        "market_cap": "73.02亿",
+        "turnover_rate": 7.37,
+        "pe_ratio": 291.12,
+        "pb_ratio": 0.78,
+        "change_percent": -1.12
+    }}
   ```
 
+
 - **Get stock price history**  
-   `GET /api/stocks/{code}/history?start=2025-07-01&end=2025-07-25`  
+   `GET /api/stocks/{code}/history?day=(day)`  
    Response:
   ```json
-  [
-    {
-      "date": "2025-01-01",
-      "price": 9.46
-    },
-    {
-      "date": "2025-01-01",
-      "price": 9.62
-    },
-    {
-      "date": "2025-01-01",
-      "price": 9.34
-    },
-    {
-      "date": "2025-01-02",
-      "price": 9.63
-    },
-    {
-      "date": "2025-01-02",
-      "price": 9.45
-    },
-    {
-      "date": "2025-01-03",
-      "price": 9.46
-    }
-  ]
+  {"data": [
+        "11.86",
+        "11.77",
+        "11.59",
+        "11.42",
+        "11.22",
+        "11.28",
+        "11.2"
+    ]}
+    
   ```
 
 ### Fund APIs
 
 - **Get all funds (pagination, type filter, sorting supported)**  
-   `GET /api/funds?page=1&limit=20&type=Hybrid&sort=fund_size&order=desc`  
-   Response:
-
-  ```json
-  [
-    {
-      "fund_code": "011722",
-      "short_name": "前海开源深圳特区精选股票A",
-      "fund_type": "股票型",
-      "fund_size": "2.36亿",
-      "industries": null,
-      "managers": "杨德龙",
-      "latest_net_value": 0.9169,
-      "change_percent": 0
-    },
-    {
-      "fund_code": "011723",
-      "short_name": "前海开源深圳特区精选股票C",
-      "fund_type": "股票型",
-      "fund_size": "4426.88万",
-      "industries": null,
-      "managers": "杨德龙",
-      "latest_net_value": 0.9061,
-      "change_percent": 0
-    },
-    {
-      "fund_code": "011726",
-      "short_name": "安信新常态股票C",
-      "fund_type": "股票型",
-      "fund_size": "1.32亿",
-      "industries": null,
-      "managers": "袁玮",
-      "latest_net_value": 1.7176,
-      "change_percent": 0
-    },
-    {
-      "fund_code": "011824",
-      "short_name": "浙商汇金量化臻选股票A",
-      "fund_type": "股票型",
-      "fund_size": "6380.80万",
-      "industries": null,
-      "managers": "陈顾君",
-      "latest_net_value": 1.094,
-      "change_percent": 0
-    },
-    {
-      "fund_code": "011825",
-      "short_name": "浙商汇金量化臻选股票C",
-      "fund_type": "股票型",
-      "fund_size": "6303.86万",
-      "industries": null,
-      "managers": "陈顾君",
-      "latest_net_value": 1.0374,
-      "change_percent": 0
-    },
-    {
-      "fund_code": "011923",
-      "short_name": "大成消费精选股票A",
-      "fund_type": "股票型",
-      "fund_size": "2.75亿",
-      "industries": null,
-      "managers": "张烨",
-      "latest_net_value": 0.8525,
-      "change_percent": 0
-    },
-    {
-      "fund_code": "011926",
-      "short_name": "大成消费精选股票C",
-      "fund_type": "股票型",
-      "fund_size": "1186.66万",
-      "industries": null,
-      "managers": "张烨",
-      "latest_net_value": 0.801,
-      "change_percent": 0
-    },
-    {
-      "fund_code": "011221",
-      "short_name": "南方匠心优选股票C",
-      "fund_type": "股票型",
-      "fund_size": "1.53亿",
-      "industries": null,
-      "managers": "李锦文",
-      "latest_net_value": 0.8585,
-      "change_percent": 0
-    },
-    {
-      "fund_code": "011295",
-      "short_name": "中信保诚量化阿尔法股票C",
-      "fund_type": "股票型",
-      "fund_size": "3.49亿",
-      "industries": null,
-      "managers": "姜鹏",
-      "latest_net_value": 1.0053,
-      "change_percent": 0
-    },
-    {
-      "fund_code": "011220",
-      "short_name": "南方匠心优选股票A",
-      "fund_type": "股票型",
-      "fund_size": "27.45亿",
-      "industries": null,
-      "managers": "李锦文",
-      "latest_net_value": 0.9098,
-      "change_percent": 0
-    }
-  ]
-  ```
-
-- **Get single fund details**  
-   `GET /api/funds/{code}`  
-   Response:
-
-  ```json
-  {
-    "fund_code": "011709",
-    "short_name": "中欧嘉益一年持有期混合C",
-    "fund_type": "混合型-偏股",
-    "fund_size": "9668.70万",
-    "industries": null,
-    "managers": "叶培培",
-    "latest_net_value": 1.0154,
-    "change_percent": 0
-  }
-  ```
-
-- **Get brief fund info**  
-   `GET /api/funds/{code}/brief`  
-   Response:
-
-  ```json
-  {
-    "fund_code": "011709",
-    "short_name": "中欧嘉益一年持有期混合C",
-    "latest_net_value": 1.0149,
-    "change_percent": -0.06
-  }
-  ```
-
-- **Get fund net value history**  
-   `GET /api/funds/{code}/history?start=2025-07-01&end=2025-07-25`  
-   Response:
-  ```json
-  [
-    {
-      "date": "2025-01-01",
-      "net_value": 1.1968
-    },
-    {
-      "date": "2025-01-01",
-      "net_value": 1.2086
-    },
-    {
-      "date": "2025-01-01",
-      "net_value": 1.2333
-    },
-    {
-      "date": "2025-01-02",
-      "net_value": 1.2178
-    },
-    {
-      "date": "2025-01-02",
-      "net_value": 1.2276
-    },
-    {
-      "date": "2025-01-03",
-      "net_value": 1.2233
-    },
-    {
-      "date": "2025-01-03",
-      "net_value": 1.2329
-    },
-    {
-      "date": "2025-01-04",
-      "net_value": 1.2404
-    }
-  ]
-  ```
+   `GET /api/funds?page=1&limit=20&sort=fund_size&order=desc`  
+   the funds api is the same as stocks, but the sort can be {fund_size, change_percent}.
 
 ## Other Notes
 

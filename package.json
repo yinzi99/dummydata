@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "npm install express better-sqlite3 xlsx  & npm install https://github.com/yinzi99/share-utils.git",
+    "start": "node app.js",
+    "prepatedb": "node scripts/initDB.js"
   },
   "keywords": [],
   "author": "",
