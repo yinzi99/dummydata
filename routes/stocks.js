@@ -78,6 +78,66 @@ router.get('/', (req, res) => {
     res.json(result);
 });
 
+// 获取推荐股票列表
+router.get('/recommend', (req, res) => {
+    const days = parseInt(req.query.days || 30);
+    const top = parseInt(req.query.top || 5);
+    const maxPE = parseFloat(req.query.maxPE || 100);
+    const minTurnover = parseFloat(req.query.minTurnover || 0);
+
+    const baseStocks = db.prepare(`
+    SELECT * FROM stocks 
+    WHERE pe_ratio <= ? AND turnover_rate >= ?
+  `).all(maxPE, minTurnover);
+
+    const scoredStocks = [];
+
+    baseStocks.forEach(stock => {
+        const rows = db.prepare(`
+      SELECT price FROM stock_history
+      WHERE stock_code = ?
+      ORDER BY date DESC
+      LIMIT ?
+    `).all(stock.code, days);
+
+        const prices = rows.map(r => r.price).filter(p => p != null);
+        if (prices.length < days) return;
+
+        const latest = prices[0];
+        const earliest = prices[prices.length - 1];
+        const returnRate = (latest - earliest) / earliest;
+
+        const mean = prices.reduce((a, b) => a + b, 0) / prices.length;
+        const stddev = Math.sqrt(prices.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / prices.length);
+
+        const maxDrawdown = Math.max(...prices.map((v, i) => {
+            const maxBefore = Math.max(...prices.slice(0, i + 1));
+            return (maxBefore - v) / maxBefore;
+        }));
+
+        const peScore = stock.pe_ratio > 0 ? 1 / stock.pe_ratio : 0;
+
+        const score = (
+            returnRate * 100 * 0.4 +
+            (1 - stddev) * 100 * 0.25 +
+            (1 - maxDrawdown) * 100 * 0.2 +
+            peScore * 100 * 0.15
+        );
+
+        scoredStocks.push({
+            ...stock,
+            score: Number(score.toFixed(2)),
+            return_rate: Number(returnRate.toFixed(4)),
+            volatility: Number(stddev.toFixed(4)),
+            max_drawdown: Number(maxDrawdown.toFixed(4)),
+            pe_inverse: Number(peScore.toFixed(4)),
+            recommend_reason: score > 85 ? '收益高，估值低，表现优异' : score > 70 ? '稳健上升，值得关注' : '波动大，需谨慎'
+        });
+    });
+
+    scoredStocks.sort((a, b) => b.score - a.score);
+    res.json(scoredStocks.slice(0, top));
+});
 
 // 获取单只股票详情（动态计算涨跌幅）
 router.get('/:code', (req, res) => {
@@ -139,6 +199,5 @@ router.get('/:code/history', (req, res) => {
     // 在代码层面做降序（最新日期在前）
     res.json(rows.reverse());
 });
-
 
 module.exports = router;

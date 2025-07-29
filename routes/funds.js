@@ -95,6 +95,59 @@ router.get('/', (req, res) => {
     res.json(result);
 });
 
+// 获取推荐基金列表
+router.get('/recommend', (req, res) => {
+    try {
+        const days = parseInt(req.query.days || 30);
+        const top = parseInt(req.query.top || 5);
+        const minSize = parseFloat(req.query.minSize || 1e9);
+        const type = req.query.type;
+
+        let sql = `SELECT * FROM funds WHERE fund_size_value >= ?`;
+        const params = [minSize];
+        if (type) {
+            sql += ' AND fund_type = ?';
+            params.push(type);
+        }
+
+        const funds = db.prepare(sql).all(...params);
+        const result = [];
+
+        for (const fund of funds) {
+            const history = db.prepare(`
+        SELECT net_value FROM fund_history
+        WHERE fund_code = ? ORDER BY date DESC LIMIT ?
+      `).all(fund.fund_code, days).map(r => r.net_value).filter(Boolean);
+
+            if (history.length < days) continue;
+
+            const ret = (history[0] - history[history.length - 1]) / history[history.length - 1];
+            const avg = history.reduce((a, b) => a + b) / history.length;
+            const vol = Math.sqrt(history.reduce((s, v) => s + (v - avg) ** 2, 0) / history.length);
+            let max = history[0],
+                drawdown = 0;
+            for (let v of history) {
+                if (v > max) max = v;
+                drawdown = Math.max(drawdown, (max - v) / max);
+            }
+
+            const score = ret * 40 + (1 - vol) * 30 + (1 - drawdown) * 20 + Math.log(fund.fund_size_value + 1) / 30 * 10;
+            result.push({
+                ...fund,
+                score: +score.toFixed(2),
+                return_rate: +(ret * 100).toFixed(2),
+                volatility: +vol.toFixed(4),
+                max_drawdown: +(drawdown * 100).toFixed(2),
+                recommend_reason: score > 85 ? '收益稳定，回撤低' : score > 70 ? '表现良好' : '波动较大'
+            });
+        }
+
+        res.json(result.sort((a, b) => b.score - a.score).slice(0, top));
+    } catch (e) {
+        res.status(500).json({ error: '推荐失败' });
+    }
+});
+
 // 获取单只基金详情（动态计算涨跌幅）
 router.get('/:code', (req, res) => {
     const { code } = req.params;
@@ -155,5 +208,6 @@ router.get('/:code/history', (req, res) => {
     // 在代码层面做降序（最新日期在前）
     res.json(rows.reverse());
 });
+
 
 module.exports = router;
