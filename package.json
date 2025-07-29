@@ -11,6 +11,7 @@
   "description": "",
   "dependencies": {
     "better-sqlite3": "^12.2.0",
+    "cors": "^2.8.5",
     "express": "^5.1.0",
     "share-utils": "github:yinzi99/share-utils",
     "util": "^0.12.5",
