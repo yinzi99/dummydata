@@ -1,44 +1,44 @@
 const db = require('../config/db');
 const { validateOfGetAllStock, validateCode, BusinessError, successResponse } = require('share-utils');
 const { generateResonse } = require('../utils/responser');
-const { validateResCode, getHistory, getItemFromJoinSearch } = require('../utils/searchTool');
+const { validateResCode, getHistory, getItemFromJoinSearch, getRecommendedStock } = require('../utils/searchTool');
 
 /**
  * 获取所有股票列表，支持分页、排序
  */
 exports.getAllStocks = (req, res) => {
-  validateOfGetAllStock(req);
-  try {
-    let stocks = getStocksBySearch(req);
-    console.log(stocks);
-    successResponse(res, stocks);
-  } catch (err) {
-    throw new BusinessError(err.message);
-  }
-
-  function getStocksBySearch(req) {
-    const { page, limit, sort, order } = req.query;
-    const offset = (page - 1) * limit;
-    
-    switch (sort) {
-      case 'market_cap':
-        return getAllStocksOrderByMarketCap(limit, order, offset);
-      case 'change_percent':
-        return getAllStocksOrderByChangePercent(limit, order, offset);
-      default:
-        return getAllStocksOrderByOther(limit, sort, order, offset);
+    validateOfGetAllStock(req);
+    try {
+        let stocks = getStocksBySearch(req);
+        console.log(stocks);
+        successResponse(res, stocks);
+    } catch (err) {
+        throw new BusinessError(err.message);
     }
-  }
 
-  function getAllStocksOrderByOther(limit, sort, order, offset) {
-    // 防止 SQL 注入，限制排序字段
-    
-    const sql = `SELECT * FROM stocks ORDER BY ${sort} ${order === 'desc' ? 'DESC' : 'ASC'} LIMIT ? OFFSET ?`;
-    return db.prepare(sql).all(Number(limit), Number(offset));
-  }
+    function getStocksBySearch(req) {
+        const { page, limit, sort, order } = req.query;
+        const offset = (page - 1) * limit;
 
-  function getAllStocksOrderByChangePercent(limit, order, offset) {
-    const sql = `
+        switch (sort) {
+            case 'market_cap':
+                return getAllStocksOrderByMarketCap(limit, order, offset);
+            case 'change_percent':
+                return getAllStocksOrderByChangePercent(limit, order, offset);
+            default:
+                return getAllStocksOrderByOther(limit, sort, order, offset);
+        }
+    }
+
+    function getAllStocksOrderByOther(limit, sort, order, offset) {
+        // 防止 SQL 注入，限制排序字段
+
+        const sql = `SELECT * FROM stocks ORDER BY ${sort} ${order === 'desc' ? 'DESC' : 'ASC'} LIMIT ? OFFSET ?`;
+        return db.prepare(sql).all(Number(limit), Number(offset));
+    }
+
+    function getAllStocksOrderByChangePercent(limit, order, offset) {
+        const sql = `
       SELECT s.*, h.change_percent
       FROM stocks s
       JOIN (
@@ -52,12 +52,12 @@ exports.getAllStocks = (req, res) => {
       ORDER BY h.change_percent ${order === 'desc' ? 'DESC' : 'ASC'}
       LIMIT ? OFFSET ?
     `;
-    return db.prepare(sql).all(Number(limit), Number(offset));
-  }
+        return db.prepare(sql).all(Number(limit), Number(offset));
+    }
 
-  function getAllStocksOrderByMarketCap(limit, order, offset) {
-    const sortOrder = order === 'desc' ? 'DESC' : 'ASC';
-    const sql = `
+    function getAllStocksOrderByMarketCap(limit, order, offset) {
+        const sortOrder = order === 'desc' ? 'DESC' : 'ASC';
+        const sql = `
       SELECT * FROM stocks
       ORDER BY 
         CASE
@@ -67,38 +67,60 @@ exports.getAllStocks = (req, res) => {
         END ${sortOrder}
       LIMIT ? OFFSET ?
     `;
-    return db.prepare(sql).all(Number(limit), Number(offset));
-  }
+        return db.prepare(sql).all(Number(limit), Number(offset));
+    }
 };
 
 /**
  * 获取单只股票详情
  */
 exports.getStockDetail = (req, res) => {
-  console.log("----code is " + req);
-  let code  = validateResCode(req);
-  console.log("----code is " + code)
-  try {
-    console.log("router is running!");
-    var stock = getItemFromJoinSearch(code, 'stock_code', 'stocks', 'stock_history');
-    console.log("stock is " + stock);
-    successResponse(res, stock);
-  } catch (err) {
-    throw new BusinessError(err.message);
-  }
+    console.log("----code is " + req);
+    let code = validateResCode(req);
+    console.log("----code is " + code)
+    try {
+        console.log("router is running!");
+        var stock = getItemFromJoinSearch(code, 'stock_code', 'stocks', 'stock_history');
+        console.log("stock is " + stock);
+        successResponse(res, stock);
+    } catch (err) {
+        throw new BusinessError(err.message);
+    }
 };
 
 /**
  * 获取单只股票历史价格
  */
 exports.getStockHistory = (req, res) => {
-  let { code, day } = validateResCode(req);
-  try {
-    console.log("get Stock history", code, day);
-    var stockHistory = getHistory(code, "stock_code",day, 'stock_history');
-    console.log("stock history is " + stockHistory);
-    successResponse(res, stockHistory);
-  } catch (err) {
-    throw new BusinessError(err.message);
-  }
+    let { code, day } = validateResCode(req);
+    try {
+        console.log("get Stock history", code, day);
+        var stockHistory = getHistory(code, "stock_code", day, 'stock_history');
+        console.log("stock history is " + stockHistory);
+        successResponse(res, stockHistory);
+    } catch (err) {
+        throw new BusinessError(err.message);
+    }
+};
+
+/**
+ * 获取推荐股票列表
+ */
+exports.getRecommendedStocks = (req, res) => {
+    try {
+        // 参数处理
+        const days = parseInt(req.query.days || 30);
+        const top = parseInt(req.query.top || 5);
+        const maxPE = parseFloat(req.query.maxPE || 100);
+        const minTurnover = parseFloat(req.query.minTurnover || 0);
+        console.log("获取推荐股票参数:", { days, top, maxPE, minTurnover });
+        // 业务逻辑
+        const recommendedStocks = getRecommendedStock(days, top, maxPE, minTurnover);
+        console.log("获取推荐股票成功", recommendedStocks);
+        // 返回结果
+        successResponse(res, recommendedStocks);
+    } catch (err) {
+        console.error("获取推荐股票失败:", err);
+        throw new BusinessError(err.message);
+    }
 };

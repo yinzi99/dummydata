@@ -2,11 +2,12 @@ const db = require('./config/db');
 require('./utils/simulator'); // 引入模拟器
 const express = require('express');
 const cors = require('cors'); // 新增：导入cors模块
-const  { errorHandler } = require('share-utils');
+const { errorHandler } = require('share-utils');
 const dummyRouter = require('./router/dummyRouter');
 const app = express();
+
 console.log('errorHandler 是否为函数:', typeof errorHandler === 'function');
-console.log('dummyRouter 是否为函数:', typeof dummyRouter === 'function'); 
+console.log('dummyRouter 是否为函数:', typeof dummyRouter === 'function');
 
 
 app.use(express.json());

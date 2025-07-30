@@ -16,7 +16,7 @@
     "better-sqlite3": "^12.2.0",
     "cors": "^2.8.5",
     "express": "^5.1.0",
-    "share-utils": "github:yinzi99/share-utils",
+    "share-utils": "git+https://github.com/yinzi99/share-utils.git",
     "util": "^0.12.5",
     "xlsx": "^0.18.5"
   }
