@@ -19,7 +19,7 @@ exports.getAllStocks = (req, res) => {
   function getStocksBySearch(req) {
     const { page, limit, sort, order } = req.query;
     const offset = (page - 1) * limit;
-    
+
     switch (sort) {
       case 'market_cap':
         return getAllStocksOrderByMarketCap(limit, order, offset);
@@ -32,7 +32,7 @@ exports.getAllStocks = (req, res) => {
 
   function getAllStocksOrderByOther(limit, sort, order, offset) {
     // 防止 SQL 注入，限制排序字段
-    
+
     const sql = `SELECT * FROM stocks ORDER BY ${sort} ${order === 'desc' ? 'DESC' : 'ASC'} LIMIT ? OFFSET ?`;
     return db.prepare(sql).all(Number(limit), Number(offset));
   }
@@ -75,13 +75,10 @@ exports.getAllStocks = (req, res) => {
  * 获取单只股票详情
  */
 exports.getStockDetail = (req, res) => {
-  console.log("----code is " + req);
-  let code  = validateResCode(req);
-  console.log("----code is " + code)
+  let { code, day } = validateResCode(req);
   try {
-    console.log("router is running!");
     var stock = getItemFromJoinSearch(code, 'stock_code', 'stocks', 'stock_history');
-    console.log("stock is " + stock);
+
     successResponse(res, stock);
   } catch (err) {
     throw new BusinessError(err.message);
@@ -94,9 +91,7 @@ exports.getStockDetail = (req, res) => {
 exports.getStockHistory = (req, res) => {
   let { code, day } = validateResCode(req);
   try {
-    console.log("get Stock history", code, day);
-    var stockHistory = getHistory(code, "stock_code",day, 'stock_history');
-    console.log("stock history is " + stockHistory);
+    var stockHistory = getHistory(code, "stock_code", day, 'stock_history');
     successResponse(res, stockHistory);
   } catch (err) {
     throw new BusinessError(err.message);

@@ -19,7 +19,7 @@ exports.getAllFunds = (req, res) => {
   function getFundsBySearch(req) {
     let { page, limit, sort, order } = req.query;
     let offset = (page - 1) * limit;
-    console.log("----getFundsBySearch  ", page, limit, sort, order, offset);  
+    console.log("----getFundsBySearch  ", page, limit, sort, order, offset);
     switch (sort) {
       case 'fund_size':
         return getAllFundsOrderByFundSize(limit, order, offset);
@@ -63,7 +63,7 @@ exports.getAllFunds = (req, res) => {
       LIMIT ? OFFSET ?
     `;
     let result = db.prepare(sql).all(Number(limit), Number(offset));
-    console.log("----000result is " , result);
+    console.log("----000result is ", result);
     return result;
   }
 };
@@ -72,7 +72,7 @@ exports.getAllFunds = (req, res) => {
  * 获取单只基金详情
  */
 exports.getFundDetail = (req, res) => {
-  let  code  = validateResCode(req);
+  let { code, day } = validateResCode(req);
   console.log("----===code is " + code)
   try {
     var fund = getItemFromJoinSearch(code, 'fund_code', 'funds', 'fund_history');
@@ -89,7 +89,8 @@ exports.getFundDetail = (req, res) => {
 exports.getFundHistory = (req, res) => {
   let { code, day } = validateResCode(req);
   try {
-    var fundHistory = getHistory(code, 'fund_code' , day, 'fund_history');
+    console.log("getFundHistory", code, day);
+    var fundHistory = getHistory(code, 'fund_code', day, 'fund_history');
     console.log("fundHistory is " + fundHistory);
     successResponse(res, fundHistory);
   } catch (err) {
