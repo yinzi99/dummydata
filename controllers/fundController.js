@@ -16,20 +16,20 @@ exports.getAllFunds = (req, res) => {
         throw new BusinessError(error.message);
     }
 
-    function getFundsBySearch(req) {
-        let { page, limit, sort, order } = req.query;
-        let offset = (page - 1) * limit;
-        console.log("----getFundsBySearch  ", page, limit, sort, order, offset);
-        switch (sort) {
-            case 'fund_size':
-                return getAllFundsOrderByFundSize(limit, order, offset);
-            case 'change_percent':
-                return getAllFundsOrderByChangePercent(limit, order, offset);
-            default:
-                // 默认查询（可根据需求补充）
-                const defaultSql = 'SELECT * FROM funds LIMIT ? OFFSET ?';
-                return db.prepare(defaultSql).all(Number(limit), Number(offset));
-        }
+
+  function getFundsBySearch(req) {
+    let { page, limit, sort, order } = req.query;
+    let offset = (page - 1) * limit;
+    console.log("----getFundsBySearch  ", page, limit, sort, order, offset);
+    switch (sort) {
+      case 'fund_size':
+        return getAllFundsOrderByFundSize(limit, order, offset);
+      case 'change_percent':
+        return getAllFundsOrderByChangePercent(limit, order, offset);
+      default:
+        // 默认查询（可根据需求补充）
+        const defaultSql = 'SELECT * FROM funds LIMIT ? OFFSET ?';
+        return db.prepare(defaultSql).all(Number(limit), Number(offset));
     }
 
     function getAllFundsOrderByFundSize(limit, order, offset) {
@@ -62,39 +62,37 @@ exports.getAllFunds = (req, res) => {
       ORDER BY h.change_percent ${order}
       LIMIT ? OFFSET ?
     `;
-        let result = db.prepare(sql).all(Number(limit), Number(offset));
-        console.log("----000result is ", result);
-        return result;
-    }
+    let result = db.prepare(sql).all(Number(limit), Number(offset));
+    return result;
+  }
 };
 
 /**
  * 获取单只基金详情
  */
 exports.getFundDetail = (req, res) => {
-    let code = validateResCode(req);
-    console.log("----===code is " + code)
-    try {
-        var fund = getItemFromJoinSearch(code, 'fund_code', 'funds', 'fund_history');
-        console.log("fund is " + fund);
-        successResponse(res, fund);
-    } catch (err) {
-        throw new BusinessError(err.message);
-    }
+  let { code, day } = validateResCode(req);
+  try {
+    var fund = getItemFromJoinSearch(code, 'fund_code', 'funds', 'fund_history');
+    successResponse(res, fund);
+  } catch (err) {
+    throw new BusinessError(err.message);
+  }
 };
 
 /**
  * 获取单只基金历史净值
  */
 exports.getFundHistory = (req, res) => {
-    let { code, day } = validateResCode(req);
-    try {
-        var fundHistory = getHistory(code, 'fund_code', day, 'fund_history');
-        console.log("fundHistory is " + fundHistory);
-        successResponse(res, fundHistory);
-    } catch (err) {
-        throw new BusinessError(err.message);
-    }
+  let { code, day } = validateResCode(req);
+  try {
+    console.log("getFundHistory", code, day);
+    var fundHistory = getHistory(code, 'fund_code', day, 'fund_history');
+    console.log("fundHistory is " + fundHistory);
+    successResponse(res, fundHistory);
+  } catch (err) {
+    throw new BusinessError(err.message);
+  }
 };
 
 /**

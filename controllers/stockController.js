@@ -20,22 +20,28 @@ exports.getAllStocks = (req, res) => {
         const { page, limit, sort, order } = req.query;
         const offset = (page - 1) * limit;
 
-        switch (sort) {
-            case 'market_cap':
-                return getAllStocksOrderByMarketCap(limit, order, offset);
-            case 'change_percent':
-                return getAllStocksOrderByChangePercent(limit, order, offset);
-            default:
-                return getAllStocksOrderByOther(limit, sort, order, offset);
-        }
+
+  function getStocksBySearch(req) {
+    const { page, limit, sort, order } = req.query;
+    const offset = (page - 1) * limit;
+
+    switch (sort) {
+      case 'market_cap':
+        return getAllStocksOrderByMarketCap(limit, order, offset);
+      case 'change_percent':
+        return getAllStocksOrderByChangePercent(limit, order, offset);
+      default:
+        return getAllStocksOrderByOther(limit, sort, order, offset);
     }
 
-    function getAllStocksOrderByOther(limit, sort, order, offset) {
-        // 防止 SQL 注入，限制排序字段
 
-        const sql = `SELECT * FROM stocks ORDER BY ${sort} ${order === 'desc' ? 'DESC' : 'ASC'} LIMIT ? OFFSET ?`;
-        return db.prepare(sql).all(Number(limit), Number(offset));
-    }
+  function getAllStocksOrderByOther(limit, sort, order, offset) {
+    // 防止 SQL 注入，限制排序字段
+
+    const sql = `SELECT * FROM stocks ORDER BY ${sort} ${order === 'desc' ? 'DESC' : 'ASC'} LIMIT ? OFFSET ?`;
+    return db.prepare(sql).all(Number(limit), Number(offset));
+  }
+
 
     function getAllStocksOrderByChangePercent(limit, order, offset) {
         const sql = `
@@ -75,32 +81,29 @@ exports.getAllStocks = (req, res) => {
  * 获取单只股票详情
  */
 exports.getStockDetail = (req, res) => {
-    console.log("----code is " + req);
-    let code = validateResCode(req);
-    console.log("----code is " + code)
-    try {
-        console.log("router is running!");
-        var stock = getItemFromJoinSearch(code, 'stock_code', 'stocks', 'stock_history');
-        console.log("stock is " + stock);
-        successResponse(res, stock);
-    } catch (err) {
-        throw new BusinessError(err.message);
-    }
+
+  let { code, day } = validateResCode(req);
+  try {
+    var stock = getItemFromJoinSearch(code, 'stock_code', 'stocks', 'stock_history');
+
+    successResponse(res, stock);
+  } catch (err) {
+    throw new BusinessError(err.message);
+  }
 };
 
 /**
  * 获取单只股票历史价格
  */
 exports.getStockHistory = (req, res) => {
-    let { code, day } = validateResCode(req);
-    try {
-        console.log("get Stock history", code, day);
-        var stockHistory = getHistory(code, "stock_code", day, 'stock_history');
-        console.log("stock history is " + stockHistory);
-        successResponse(res, stockHistory);
-    } catch (err) {
-        throw new BusinessError(err.message);
-    }
+
+  let { code, day } = validateResCode(req);
+  try {
+    var stockHistory = getHistory(code, "stock_code", day, 'stock_history');
+    successResponse(res, stockHistory);
+  } catch (err) {
+    throw new BusinessError(err.message);
+  }
 };
 
 /**

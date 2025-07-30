@@ -1,24 +1,23 @@
 const { validateCode, BusinessError } = require("share-utils")
 const { virtualDataManager, getVirtualDate, formatDate } = require("./virtualDateManager")
-    // 在文件顶部添加
+
 const db = require('../config/db'); // 路径根据实际项目结构调整
 function validateResCode(req) {
     try {
-        let { code } = req.params;
-        let { day } = req.query;
-        console.log(code, day);
-        console.log(typeof(code));
-        validateCode(code);
-        if (day !== undefined) {
-            day = parseInt(day, 10);
-            console.log("验证成功", code, day);
-            return { code, day };
-        }
-        console.log("验证成功", code);
-        return code;
-    } catch (err) {
-        throw new BusinessError(err.message)
+        const code = req.params.code;
+        const day = req.query.day;
+        console.log("validateResCode is running", code, day);
+        console.log(typeof (code));
 
+        validateCode(code); // 验证 code 合法性
+
+        // 统一返回对象，day 不存在时为 undefined
+        return {
+            code,
+            day: day !== undefined ? parseInt(day, 10) : undefined
+        };
+    } catch (err) {
+        throw new BusinessError(err.message);
     }
 }
 
