@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "npm install express better-sqlite3 xlsx  & npm install https://github.com/yinzi99/share-utils.git",
+    "start": "node app.js",
+    "prepatedb": "node scripts/initDB.js"
   },
   "keywords": [],
   "author": "",
@@ -11,6 +14,7 @@
   "description": "",
   "dependencies": {
     "better-sqlite3": "^12.2.0",
+    "cors": "^2.8.5",
     "express": "^5.1.0",
     "share-utils": "github:yinzi99/share-utils",
     "util": "^0.12.5",

@@ -4,7 +4,7 @@ const { importXLSX } = require('../utils/importXlsx');
 const SCHEMAS = [
     // 股票主表
     `CREATE TABLE IF NOT EXISTS stocks (
-    code TEXT PRIMARY KEY,
+    stock_code TEXT PRIMARY KEY,
     name TEXT,
     latest_price REAL,
     market_cap TEXT,         
@@ -20,12 +20,18 @@ const SCHEMAS = [
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     stock_code TEXT,
     date TEXT,
+<<<<<<< HEAD
     price REAL,
     high REAL,
     low REAL,
     volume TEXT,
     change_percent REAL,
     FOREIGN KEY(stock_code) REFERENCES stocks(code)
+=======
+    price TEXT,
+    change_percent REAL,
+    FOREIGN KEY(stock_code) REFERENCES stocks(stock_code)
+>>>>>>> 47b36e9b4c84a9410d38b341c148b517a29f0907
   )`,
     `CREATE INDEX IF NOT EXISTS idx_stock_code_date_desc ON stock_history (stock_code, date DESC)`,
     `CREATE INDEX IF NOT EXISTS idx_stock_code_date_asc ON stock_history (stock_code, date ASC)`,
@@ -38,7 +44,7 @@ const SCHEMAS = [
     fund_size TEXT,
     industries TEXT,
     managers TEXT,
-    latest_net_value REAL
+    latest_price REAL
   )`,
 
     // 基金历史表
@@ -46,7 +52,7 @@ const SCHEMAS = [
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     fund_code TEXT,
     date TEXT,
-    net_value REAL,
+    price REAL,
     change_percent REAL,
     FOREIGN KEY(fund_code) REFERENCES funds(fund_code)
   )`,
@@ -58,7 +64,7 @@ const SCHEMAS = [
 // 字段映射 (适配您的Excel)
 const FIELD_MAPS = {
     stocks: {
-        '代码': 'code',
+        '代码': 'stock_code',
         '名称': 'name',
         '最新价': 'latest_price',
         '总市值': 'market_cap',
@@ -73,7 +79,7 @@ const FIELD_MAPS = {
         '基金规模': 'fund_size',
         '重仓行业': 'industries',
         '基金经理': 'managers',
-        '基金净值': 'latest_net_value'
+        '基金净值': 'latest_price'
     }
 };
 
