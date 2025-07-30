@@ -112,4 +112,4 @@ exports.getFundRecommendFunds = (req, res) => {
     } catch (err) {
         throw new BusinessError(err.message);
     }
-};
+};}
