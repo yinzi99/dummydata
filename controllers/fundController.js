@@ -1,20 +1,21 @@
 const db = require('../config/db');
 const { validateOfGetAllFund, validateLimit, validateCode, BusinessError, successResponse } = require('share-utils');
 const { generateResonse } = require('../utils/responser');
-const { validateResCode, getHistory, getItemFromJoinSearch } = require('../utils/searchTool');
+const { validateResCode, getHistory, getItemFromJoinSearch, getRecommendedFund } = require('../utils/searchTool');
 
 /**
  * 获取所有基金列表，支持分页、排序
  */
 exports.getAllFunds = (req, res) => {
-  validateOfGetAllFund(req);
-  try {
-    const funds = getFundsBySearch(req);
-    console.log("----funds is ", funds);
-    successResponse(res, funds);
-  } catch (error) {
-    throw new BusinessError(error.message);
-  }
+    validateOfGetAllFund(req);
+    try {
+        const funds = getFundsBySearch(req);
+        console.log("----funds is ", funds);
+        successResponse(res, funds);
+    } catch (error) {
+        throw new BusinessError(error.message);
+    }
+
 
   function getFundsBySearch(req) {
     let { page, limit, sort, order } = req.query;
@@ -30,11 +31,10 @@ exports.getAllFunds = (req, res) => {
         const defaultSql = 'SELECT * FROM funds LIMIT ? OFFSET ?';
         return db.prepare(defaultSql).all(Number(limit), Number(offset));
     }
-  }
 
-  function getAllFundsOrderByFundSize(limit, order, offset) {
-    const params = [];
-    let sql = `
+    function getAllFundsOrderByFundSize(limit, order, offset) {
+        const params = [];
+        let sql = `
       SELECT * FROM funds ORDER BY 
       CASE
         WHEN fund_size LIKE '%亿' THEN CAST(REPLACE(fund_size, '亿', '') AS REAL) * 100000000
@@ -43,12 +43,12 @@ exports.getAllFunds = (req, res) => {
       END ${order === 'desc' ? 'DESC' : 'ASC'}
       LIMIT ? OFFSET ?
     `;
-    params.push(Number(limit), Number(offset));
-    return db.prepare(sql).all(...params);
-  }
+        params.push(Number(limit), Number(offset));
+        return db.prepare(sql).all(...params);
+    }
 
-  function getAllFundsOrderByChangePercent(limit, order, offset) {
-    const sql = `
+    function getAllFundsOrderByChangePercent(limit, order, offset) {
+        const sql = `
       SELECT f.*, h.change_percent
       FROM funds f
       JOIN (
@@ -63,7 +63,6 @@ exports.getAllFunds = (req, res) => {
       LIMIT ? OFFSET ?
     `;
     let result = db.prepare(sql).all(Number(limit), Number(offset));
-    console.log("----000result is ", result);
     return result;
   }
 };
@@ -73,10 +72,8 @@ exports.getAllFunds = (req, res) => {
  */
 exports.getFundDetail = (req, res) => {
   let { code, day } = validateResCode(req);
-  console.log("----===code is " + code)
   try {
     var fund = getItemFromJoinSearch(code, 'fund_code', 'funds', 'fund_history');
-    console.log("fund is " + fund);
     successResponse(res, fund);
   } catch (err) {
     throw new BusinessError(err.message);
@@ -96,4 +93,23 @@ exports.getFundHistory = (req, res) => {
   } catch (err) {
     throw new BusinessError(err.message);
   }
+};
+
+/**
+ * 获取推荐基金
+ */
+exports.getFundRecommendFunds = (req, res) => {
+    try {
+        const { days = 30, top = 5, minSize = 1e9 } = req.query;
+        console.log("获取推荐基金参数:", { days, top, minSize, type });
+
+        // 业务逻辑
+        const recommendedFunds = getRecommendedFund(days, top, minSize, type);
+        console.log("获取推荐基金成功", recommendedFunds);
+
+        // 返回结果
+        successResponse(res, recommendedFunds);
+    } catch (err) {
+        throw new BusinessError(err.message);
+    }
 };
